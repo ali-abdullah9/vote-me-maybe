@@ -77,7 +77,11 @@ export function ParticlesBackground({
     setInitialized(true);
   }, []);
 
-  const particlesLoaded = useCallback(async (container) => {
+  interface ParticlesLoadedProps {
+    container?: unknown;
+  }
+
+  const particlesLoaded = useCallback(async () => {
     // Optional: Do something when the particles container is loaded
     console.log("Particles container loaded");
   }, []);

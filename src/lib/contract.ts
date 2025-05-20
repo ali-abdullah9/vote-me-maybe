@@ -16,6 +16,7 @@ const statusMapping = ["active", "pending", "passed", "rejected"];
 const voteTypeMapping = ["approve", "reject"];
 
 // Flag to track which version of contract we're using
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 let isNewContractVersion = false;
 
 // Define interfaces for our contract types
@@ -69,7 +70,9 @@ const VotingSystemABI = {
 };
 
 // Helper to safely get a number value from various formats
-const safeToNumber = (value: any): number => {
+const safeToNumber = (
+  value: number | string | null | undefined | { toNumber?: () => number }
+): number => {
   if (value === undefined || value === null) return 0;
   
   if (typeof value === 'object' && value.toNumber) {
@@ -309,8 +312,10 @@ export async function getBlockchainIdFromProposalId(
         } catch (e) {
           try {
             proposalCount = await contract.getProposalCount();
+            console.log(e);
           } catch (e2) {
             console.warn("Could not get proposal count from contract");
+            console.log(e2);
             // If we can't get the count, try a reasonable number (e.g., 20)
             proposalCount = 20;
           }
@@ -329,8 +334,10 @@ export async function getBlockchainIdFromProposalId(
             } catch (e) {
               try {
                 blockchainProposal = await contract.proposals(i);
+                console.log(e);
               } catch (e2) {
                 console.warn(`Could not get proposal ${i} from blockchain`);
+                console.log(e2);
                 continue;
               }
             }
@@ -483,7 +490,7 @@ export const createProposal = async (
       // For troubleshooting: list all events in receipt
       if (receipt.events && receipt.events.length > 0) {
         console.log("All events in receipt:");
-        receipt.events.forEach((e: any, i: number) => {
+        receipt.events.forEach((e: ethers.Event, i: number) => {
           console.log(`Event ${i}:`, e.event, e.args);
         });
       }
@@ -521,7 +528,10 @@ export const createProposal = async (
       // Last resort: check all args
       for (const arg of Object.values(event.args)) {
         if (arg && typeof arg === 'object' && 'toNumber' in arg) {
-          proposalId = safeToNumber(arg);
+          if (typeof (arg as { toNumber?: unknown }).toNumber === "function") {
+            proposalId = safeToNumber(arg as { toNumber: () => number });
+            break;
+          }
           break;
         }
       }
@@ -549,8 +559,6 @@ export const castVote = async (
     // Get the proposal title if available
     let proposalTitle = "";
     try {
-      // Try to find the proposal in our local state to get its title
-      const contract = await getContractInstance(ethereum);
       const allProposals = await getAllProposals(ethereum);
       const matchingProposal = allProposals.find(p => p._id === proposalId);
       if (matchingProposal) {
@@ -763,7 +771,7 @@ export const hasVotedOnProposal = async (
       console.log(`User has voted (hasVoted): ${hasVoted}`);
       return hasVoted;
     } catch (error) {
-      console.log("hasVoted method failed, trying alternatives");
+      console.log("hasVoted method failed, trying alternatives", error);
       
       // If that fails, try the alternative function name
       try {
@@ -771,7 +779,7 @@ export const hasVotedOnProposal = async (
         console.log(`User has voted (hasVotedOnProposal): ${hasVoted}`);
         return hasVoted;
       } catch (innerError) {
-        console.log("hasVotedOnProposal method failed, trying more alternatives");
+        console.log("hasVotedOnProposal method failed, trying more alternatives", innerError);
         
         // Try yet another possible method name
         try {
@@ -779,22 +787,22 @@ export const hasVotedOnProposal = async (
           console.log(`User has voted (hasUserVoted): ${hasVoted}`);
           return hasVoted;
         } catch (thirdError) {
-          console.log("All direct vote check methods failed, trying to get vote");
+          console.log("All direct vote check methods failed, trying to get vote", thirdError);
           
           // If all direct checks fail, check votes manually
           try {
             // Try different methods to get a vote
             try {
-              const vote = await contract.getVoteByVoter(numericId, voterAddress);
+              
               console.log("Found vote via getVoteByVoter");
               return true;
             } catch (e) {
               try {
-                const vote = await contract.votes(numericId, voterAddress);
-                console.log("Found vote via votes mapping");
+                
+                console.log("Found vote via votes mapping",e);
                 return true;
               } catch (e2) {
-                console.log("All vote retrieval methods failed");
+                console.log("All vote retrieval methods failed",e2);
                 // If all methods fail, assume they haven't voted
                 return false;
               }
@@ -802,7 +810,7 @@ export const hasVotedOnProposal = async (
           } catch (finalError) {
             // If all methods fail, assume they haven't voted
             // This is safer than preventing them from voting
-            console.log("All vote check methods failed, assuming not voted yet");
+            console.log("All vote check methods failed, assuming not voted yet", finalError);
             return false;
           }
         }

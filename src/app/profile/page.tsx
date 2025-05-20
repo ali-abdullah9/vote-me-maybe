@@ -42,7 +42,7 @@ export default function ProfilePage() {
   const userVotingActivity = votes
     .filter((vote) => vote.voterAddress === currentUser.address)
     .map((vote) => {
-      const proposal = proposals.find((p) => p.id === vote.proposalId);
+      const proposal = proposals.find((p) => String(p.id) === String(vote.proposalId));
       return {
         id: vote.proposalId,
         proposal: proposal?.title || `Proposal #${vote.proposalId}`,

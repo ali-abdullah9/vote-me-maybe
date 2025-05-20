@@ -580,7 +580,14 @@ const voteOnProposal = async (
         const convexProposal = proposals.find(p => 
           typeof p._id !== 'string' && 
           (p.title === proposal.title || 
-           (typeof p._id === 'object' && p._id.toString().includes(proposal._id.toString())))
+           (
+             typeof p._id === 'object' &&
+             p._id &&
+             proposal._id &&
+             typeof proposal._id === 'string' &&
+             typeof (p._id as { toString?: () => string }).toString === 'function' &&
+             (p._id as { toString: () => string }).toString().includes(proposal._id.toString())
+           ))
         );
         
         if (convexProposal && typeof convexProposal._id !== 'string') {
@@ -613,15 +620,15 @@ const voteOnProposal = async (
       if (convexVoteId) {
         // Add the new vote to local state
         setVotes(prevVotes => [
-          ...prevVotes,
-          {
-            _id: convexVoteId,
-            proposalId: proposal._id,
-            voterAddress: currentUser.address || "",
-            voteType,
-            votedAt: new Date().toISOString()
-          }
-        ]);
+                  ...prevVotes,
+                  {
+                    _id: convexVoteId ?? undefined,
+                    proposalId: proposal._id,
+                    voterAddress: currentUser.address || "",
+                    voteType,
+                    votedAt: new Date().toISOString()
+                  }
+                ]);
         
         // Update the proposal's vote count
         setProposals(prevProposals => 
@@ -743,12 +750,17 @@ const voteOnProposal = async (
           console.log("Using direct Convex ID for status update:", proposal._id);
           convexId = proposal._id as Id<"proposals">;
         } else {
+
           // If it's a string, try to find a matching proposal with a Convex ID
           const convexProposal = proposals.find(p => 
             typeof p._id !== 'string' && 
             (p.title === proposal.title || 
-             (typeof p._id === 'object' && p._id.toString().includes(proposal._id.toString())))
-          );
+             (
+               typeof p._id === 'object' &&
+               p._id !== null &&
+               typeof (p._id as { toString?: () => string }).toString === 'function' &&
+               (p._id as { toString: () => string }).toString().includes(proposal._id.toString())
+             )))
           
           if (convexProposal && typeof convexProposal._id !== 'string') {
             console.log("Found matching Convex proposal:", convexProposal._id);

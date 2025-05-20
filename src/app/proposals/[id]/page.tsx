@@ -7,7 +7,7 @@ import { useAppContext } from "@/contexts/app-context";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
+import { CardContent } from "@/components/ui/card";
 import { 
   Calendar, 
   Users, 
@@ -128,7 +128,6 @@ export default function EnhancedProposalDetailPage() {
     return (
       <div className="container mx-auto p-8">
         <AnimatedButton 
-          variant="outline" 
           onClick={() => router.push('/proposals')}
           className="mb-8 border-primary/20 hover:bg-primary/5"
         >
@@ -335,7 +334,6 @@ export default function EnhancedProposalDetailPage() {
     
       <div className="container mx-auto p-6">
         <AnimatedButton
-          variant="outline" 
           onClick={() => router.push('/proposals')}
           className="mb-8 border-primary/20 hover:bg-primary/5"
         >
@@ -378,8 +376,6 @@ export default function EnhancedProposalDetailPage() {
                 </AnimatedContainer>
               </div>
               <AnimatedButton 
-                variant="outline" 
-                size="sm" 
                 className="mt-4 sm:mt-0 border-primary/20 hover:bg-primary/5"
                 onClick={handleShare}
               >
@@ -388,7 +384,7 @@ export default function EnhancedProposalDetailPage() {
               </AnimatedButton>
             </AnimatedContainer>
             
-            <AnimatedCard className="mb-8" delay={0.3}>
+            <AnimatedCard className="mb-8">
               <CardContent className="p-6">
                 <div className="prose dark:prose-invert max-w-none">
                   <motion.p 
@@ -468,7 +464,7 @@ export default function EnhancedProposalDetailPage() {
           
           <div>
             {/* Vote Card */}
-            <AnimatedCard className="mb-6" delay={0.3}>
+            <AnimatedCard className="mb-6" >
               <CardContent className="p-6">
                 <h2 className="mb-4 text-xl font-bold">Vote on This Proposal</h2>
                 
@@ -555,7 +551,7 @@ export default function EnhancedProposalDetailPage() {
             
             {/* Creator Actions */}
             {isCreator && proposal.status === "active" && (
-              <AnimatedCard className="mb-6" delay={0.4}>
+              <AnimatedCard className="mb-6">
                 <CardContent className="p-6">
                   <h2 className="mb-4 text-xl font-bold">Creator Actions</h2>
                   <motion.p 
@@ -628,7 +624,7 @@ export default function EnhancedProposalDetailPage() {
             )}
             
             {/* Proposal Information */}
-            <AnimatedCard delay={0.5}>
+            <AnimatedCard>
               <CardContent className="p-6">
                 <h2 className="mb-4 text-xl font-bold">Proposal Information</h2>
                 
@@ -693,7 +689,7 @@ export default function EnhancedProposalDetailPage() {
             </AnimatedCard>
             
             {/* Vote visualization */}
-            <AnimatedCard className="mt-6" delay={0.6}>
+            <AnimatedCard className="mt-6">
               <CardContent className="p-6">
                 <h2 className="mb-4 text-xl font-bold">Vote Distribution</h2>
                 <div className="flex justify-center">
@@ -701,7 +697,6 @@ export default function EnhancedProposalDetailPage() {
                     approveCount={proposal.approveCount}
                     rejectCount={proposal.rejectCount}
                     totalVotes={proposal.totalVotes}
-                    size={180}
                   />
                 </div>
               </CardContent>

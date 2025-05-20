@@ -6,12 +6,14 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 
 // Animated container with fade-in and slide-up effect
+import type { MotionProps } from 'framer-motion';
+
 export function AnimatedContainer({
   children,
   className,
   delay = 0,
   ...props
-}: React.HTMLAttributes<HTMLDivElement> & { delay?: number }) {
+}: MotionProps & { className?: string; delay?: number }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -30,7 +32,7 @@ export function AnimatedText({
   text,
   className,
   ...props
-}: { text: string } & React.HTMLAttributes<HTMLHeadingElement>) {
+}: { text: string } & React.ComponentProps<typeof motion.h2>) {
   const words = text.split(' ');
   
   const container = {
@@ -84,11 +86,13 @@ export function AnimatedText({
 }
 
 // Animated button with hover and click effects
+import type { ComponentPropsWithoutRef } from 'react';
+
 export function AnimatedButton({
   children,
   className,
   ...props
-}: React.ButtonHTMLAttributes<HTMLButtonElement>) {
+}: ComponentPropsWithoutRef<typeof motion.button>) {
   return (
     <motion.button
       whileHover={{ scale: 1.05 }}
@@ -102,11 +106,13 @@ export function AnimatedButton({
 }
 
 // Animated card with hover effects
+import type { HTMLMotionProps } from 'framer-motion';
+
 export function AnimatedCard({
   children,
   className,
   ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
+}: HTMLMotionProps<'div'>) {
   return (
     <motion.div
       whileHover={{ 
@@ -127,7 +133,7 @@ export function AnimatedBadge({
   children,
   className,
   ...props
-}: React.HTMLAttributes<HTMLDivElement>) {
+}: HTMLMotionProps<'div'>) {
   return (
     <motion.div
       initial={{ scale: 0 }}
